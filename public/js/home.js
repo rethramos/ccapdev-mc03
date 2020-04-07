@@ -1,5 +1,4 @@
 $(document).ready(function () {
-
     /*
     TODO:   The code below attaches a `keyup` event to `#number` text field.
             The code checks if the current number entered by the user in the
@@ -15,8 +14,31 @@ $(document).ready(function () {
             - `#error` displays no error message
             - `#submit` is enabled
     */
-    $('#number').keyup(function () {
+    $("#number").keyup(function () {
         // your code here
+        var input = this;
+        var url = `/getCheckNumber?q=${input.value}`;
+
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = () => {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                // validate #number.value
+
+                if (!xhr.response) {
+                    document.querySelector("#error").innerHTML = "";
+                    input.style.backgroundColor = "#e3e3e3";
+                    document.querySelector("#submit").disabled = false;
+                } else {
+                    var response = JSON.parse(xhr.response);
+                    input.style.backgroundColor = "red";
+                    document.querySelector("#error").innerHTML =
+                        "Number already registered";
+                    document.querySelector("#submit").disabled = true;
+                }
+            }
+        };
+        xhr.open("GET", url, true);
+        xhr.send();
     });
 
     /*
@@ -30,8 +52,17 @@ $(document).ready(function () {
 
             The name and the number fields are reset to empty values.
     */
-    $('#submit').click(function () {
+    $("#submit").click(function () {
         // your code here
+        var name = document.querySelector("#name");
+        var number = document.querySelector("#number");
+
+        if (name.value != "" && number.value != "") {
+            var url = `/add?name=${name.value}&number=${number.value}`;
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", url, true);
+            xhr.send();
+        }
     });
 
     /*
@@ -41,8 +72,7 @@ $(document).ready(function () {
             specific `.remove` button, then removes the its parent `<div>` of
             class `.contact`.
     */
-    $('#contacts').on('click', '.remove', function () {
+    $("#contacts").on("click", ".remove", function () {
         // your code here
     });
-
-})
+});
