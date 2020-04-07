@@ -19,26 +19,20 @@ $(document).ready(function () {
         var input = this;
         var url = `/getCheckNumber?q=${input.value}`;
 
-        var xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = () => {
-            if (xhr.readyState == 4 && xhr.status == 200) {
-                // validate #number.value
-
-                if (!xhr.response) {
+        $.get(url, (data, status, xhr) => {
+            if (status == "success") {
+                if (!data) {
                     document.querySelector("#error").innerHTML = "";
                     input.style.backgroundColor = "#e3e3e3";
                     document.querySelector("#submit").disabled = false;
                 } else {
-                    var response = JSON.parse(xhr.response);
                     input.style.backgroundColor = "red";
                     document.querySelector("#error").innerHTML =
                         "Number already registered";
                     document.querySelector("#submit").disabled = true;
                 }
             }
-        };
-        xhr.open("GET", url, true);
-        xhr.send();
+        });
     });
 
     /*
@@ -59,9 +53,15 @@ $(document).ready(function () {
 
         if (name.value != "" && number.value != "") {
             var url = `/add?name=${name.value}&number=${number.value}`;
-            var xhr = new XMLHttpRequest();
-            xhr.open("GET", url, true);
-            xhr.send();
+
+            $.get(url, (data, status, xhr) => {
+                if (status == "success") {
+                    document.querySelector("#contacts").innerHTML += data;
+                }
+            });
+
+            name.value = "";
+            number.value = "";
         }
     });
 
@@ -74,5 +74,13 @@ $(document).ready(function () {
     */
     $("#contacts").on("click", ".remove", function () {
         // your code here
+        var info = this.previousElementSibling;
+        var url = `/delete?name=${info.firstElementChild.innerText}&number=${info.lastElementChild.innerText}`;
+
+        $.get(url, (data, status, xhr) => {
+            if (status == "success") {
+                info.parentElement.remove();
+            }
+        });
     });
 });

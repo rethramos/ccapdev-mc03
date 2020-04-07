@@ -13,7 +13,9 @@ const controller = {
     */
     getIndex: function (req, res) {
         // your code here
-        res.render("home"); // This is to load the page initially
+        db.findMany(User, {}, null, (data) => {
+            res.render("home", { data: data }); // This is to load the page initially
+        });
     },
 
     /*
@@ -25,9 +27,7 @@ const controller = {
     */
     getCheckNumber: function (req, res) {
         // your code here
-        console.log(req.query.q);
         db.findOne(User, { number: req.query.q }, null, (data) => {
-            console.log('data: ' + data);
             res.send(data);
         });
     },
@@ -40,9 +40,10 @@ const controller = {
     */
     getAdd: function (req, res) {
         // your code here
-        console.log(req.query);
         db.insertOne(User, req.query, (data) => {
-            console.log(data);
+            res.render('./partials/card', req.query, (err, html) => {
+                res.send(html);
+            });
         });
     },
 
@@ -54,6 +55,9 @@ const controller = {
     */
     getDelete: function (req, res) {
         // your code here
+        db.deleteOne(User, req.query, (data) => {
+            res.send(data);
+        });
     },
 };
 
